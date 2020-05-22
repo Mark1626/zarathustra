@@ -1,0 +1,8 @@
+{
+  "name": "zarathustra",
+  "version": "1.0.0",
+  "main": "api/zarathustra.js",
+  "repository": "git@github.com:Mark1626/zarathustra.git",
+  "author": "Mark1626 <nimalan.m@protonmail.com>",
+  "license": "MIT"
+}
