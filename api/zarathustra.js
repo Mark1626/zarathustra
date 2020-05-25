@@ -40,7 +40,7 @@ const updateGist = (content, res) => {
 
 module.exports = (req, res) => {
   const { Auth } = req.headers;
-  JSON.parse(req.body);
+  const { entry } = JSON.parse(req.body);
   let content;
 
   if (Auth === WRITE_API_KEY) {
@@ -48,7 +48,7 @@ module.exports = (req, res) => {
       .then((res) => res.json())
       .then((val) => {
         content = val.files["zarathustra.txt"].content;
-        const log = `${content}\n${new Date().toISOString()}\t${line}`
+        const log = `${content}\n${new Date().toISOString()}\t${entry}`
         updateGist(log, res);
       })
       .catch((err) => {
