@@ -39,6 +39,7 @@ const updateGist = (content, res) => {
 };
 
 module.exports = (req, res) => {
+  console.log(req.headers)
   const { Auth } = req.headers;
   const { entry } = req.body;
   let content;
