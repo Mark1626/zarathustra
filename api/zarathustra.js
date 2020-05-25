@@ -5,7 +5,8 @@ const WRITE_API_KEY = process.env.WRITE_API_KEY;
 const API_URL = `https://api.github.com`;
 const GIST_ID = process.env.GIST_ID;
 
-const updateGist = (content, response) => {
+const updateGist = (content) => {
+  let resp;
   fetch(
     `${API_URL}/gists/${GIST_ID}`,
     {
@@ -25,21 +26,24 @@ const updateGist = (content, response) => {
       }),
     },
     (res) => {
-      console.log("Gist updated succesfully")
-      response.status(200).json({
+      console.log("Gist updated succesfully");
+      resp = {
+        status: 200,
         msg: `Log added`,
-      });
+      };
     }
   ).catch((err) => {
-    response.status(500).json({
+    resp = {
+      status: 500,
       msg: `Unexpected error occured`,
-    });
+    };
     console.error(err);
   });
+  return resp;
 };
 
 module.exports = (request, response) => {
-  console.log("Started Request")
+  console.log("Started Request");
   const { auth } = request.headers;
   const { entry } = request.body;
   let content;
@@ -49,9 +53,12 @@ module.exports = (request, response) => {
       .then((res) => res.json())
       .then((val) => {
         content = val.files["zarathustra.txt"].content;
-        console.log("Fetch done succesfully")
-        const log = `${content}\n${new Date().toISOString()}\t${entry}`
-        updateGist(log, response);
+        console.log("Fetch done succesfully");
+        const log = `${content}\n${new Date().toISOString()}\t${entry}`;
+        const { status, msg } = updateGist(log);
+        response.status(status).json({
+          msg,
+        });
       })
       .catch((err) => {
         response.status(500).json({
