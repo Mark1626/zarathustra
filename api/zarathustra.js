@@ -5,38 +5,36 @@ const WRITE_API_KEY = process.env.WRITE_API_KEY;
 const API_URL = `https://api.github.com`;
 const GIST_ID = process.env.GIST_ID;
 
-const updateGist = (content) => {
+const updateGist = async (content) => {
   let resp;
-  fetch(`${API_URL}/gists/${GIST_ID}`, {
-    method: "PATCH",
-    headers: {
-      Authorization: `token ${API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      description: "Thus Spoke Zarathustra",
-      files: {
-        "zarathustra.txt": {
-          content,
-          filename: "zarathustra.txt",
-        },
+  try {
+    const resp = await fetch(`${API_URL}/gists/${GIST_ID}`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `token ${API_KEY}`,
+        "Content-Type": "application/json",
       },
-    }),
-  })
-    .then((res) => {
-      console.log("Gist updated succesfully");
-      resp = {
-        status: 200,
-        msg: `Log added`,
-      };
-    })
-    .catch((err) => {
-      resp = {
-        status: 500,
-        msg: `Unexpected error occured`,
-      };
-      console.error(err);
+      body: JSON.stringify({
+        description: "Thus Spoke Zarathustra",
+        files: {
+          "zarathustra.txt": {
+            content,
+            filename: "zarathustra.txt",
+          },
+        },
+      }),
     });
+    resp = {
+      status: 200,
+      msg: `Log added`,
+    };
+  } catch (err) {
+    console.error(err);
+    resp = {
+      status: 200,
+      msg: `Log added`,
+    };
+  }
   return resp;
 };
 
@@ -49,11 +47,11 @@ module.exports = (request, response) => {
   if (auth === WRITE_API_KEY) {
     fetch(`${API_URL}/gists/${GIST_ID}`)
       .then((res) => res.json())
-      .then((val) => {
+      .then(async (val) => {
         content = val.files["zarathustra.txt"].content;
         console.log("Fetch done succesfully");
         const log = `${content}\n${new Date().toISOString()}\t${entry}`;
-        const { status, msg } = updateGist(log);
+        const { status, msg } = await updateGist(log);
         response.status(status).json({
           msg,
         });
