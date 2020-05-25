@@ -1,24 +1,11 @@
 const fetch = require("node-fetch");
 
-module.exports = (req, res) => {
-  console.log(req.body)
-  const API_KEY = process.env.API_KEY;
-  const API_URL = `https://api.github.com`;
-  const GIST_ID = process.env.GIST_ID;
-  let content;
+const API_KEY = process.env.API_KEY;
+const WRITE_API_KEY = process.env.WRITE_API_KEY;
+const API_URL = `https://api.github.com`;
+const GIST_ID = process.env.GIST_ID;
 
-  fetch(`${API_URL}/gists/${GIST_ID}`)
-    .then((res) => res.json())
-    .then((val) => {
-      content = val.files["zarathustra.txt"].content;
-    })
-    .catch((err) => {
-      response.status(500).json({
-        msg: `Unexpected error occured`,
-      });
-      console.error(err);
-    });
-
+const updateGist = (content, res) => {
   fetch(
     `${API_URL}/gists/${GIST_ID}`,
     {
@@ -31,19 +18,48 @@ module.exports = (req, res) => {
         description: "A bot",
         files: {
           "zarathustra.txt": {
-            content: "New line 3",
+            content,
             filename: "zarathustra.txt",
           },
         },
       }),
     },
     (res) => {
+      res.status(200).json({
+        msg: `Log added`,
+      });
       console.error(res);
     }
   ).catch((err) => {
-    // response.status(500).json({
-    //   msg: `Unexpected error occured`,
-    // });
+    res.status(500).json({
+      msg: `Unexpected error occured`,
+    });
     console.error(err);
   });
+};
+
+module.exports = (req, res) => {
+  const { Auth } = req.headers;
+  JSON.parse(req.body);
+  let content;
+
+  if (Auth === WRITE_API_KEY) {
+    fetch(`${API_URL}/gists/${GIST_ID}`)
+      .then((res) => res.json())
+      .then((val) => {
+        content = val.files["zarathustra.txt"].content;
+        const log = `${content}\n${new Date().toISOString()}\t${line}`
+        updateGist(log, res);
+      })
+      .catch((err) => {
+        res.status(500).json({
+          msg: `Unexpected error occured`,
+        });
+        console.error(err);
+      });
+  } else {
+    res.status(401).json({
+      msg: `Unauthorized`,
+    });
+  }
 };
