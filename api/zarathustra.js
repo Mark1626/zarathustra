@@ -5,7 +5,7 @@ const WRITE_API_KEY = process.env.WRITE_API_KEY;
 const API_URL = `https://api.github.com`;
 const GIST_ID = process.env.GIST_ID;
 
-const updateGist = (content, res) => {
+const updateGist = (content, response) => {
   fetch(
     `${API_URL}/gists/${GIST_ID}`,
     {
@@ -15,7 +15,7 @@ const updateGist = (content, res) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        description: "A bot",
+        description: "Thus Spoke Zarathustra",
         files: {
           "zarathustra.txt": {
             content,
@@ -25,7 +25,8 @@ const updateGist = (content, res) => {
       }),
     },
     (res) => {
-      res.status(200).json({
+      console.log("Gist updated succesfully")
+      response.status(200).json({
         msg: `Log added`,
       });
       console.error(res);
@@ -39,6 +40,7 @@ const updateGist = (content, res) => {
 };
 
 module.exports = (req, res) => {
+  console.log("Started Request")
   const { auth } = req.headers;
   const { entry } = req.body;
   let content;
@@ -48,6 +50,7 @@ module.exports = (req, res) => {
       .then((res) => res.json())
       .then((val) => {
         content = val.files["zarathustra.txt"].content;
+        console.log("Fetch done succesfully")
         const log = `${content}\n${new Date().toISOString()}\t${entry}`
         updateGist(log, res);
       })
