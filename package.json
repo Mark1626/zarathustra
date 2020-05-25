@@ -4,5 +4,8 @@
   "main": "api/zarathustra.js",
   "repository": "git@github.com:Mark1626/zarathustra.git",
   "author": "Mark1626 <nimalan.m@protonmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^2.6.0"
+  }
 }
