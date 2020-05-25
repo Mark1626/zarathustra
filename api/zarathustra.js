@@ -40,7 +40,7 @@ const updateGist = (content, res) => {
 
 module.exports = (req, res) => {
   const { Auth } = req.headers;
-  const { entry } = JSON.parse(req.body);
+  const { entry } = req.body;
   let content;
 
   if (Auth === WRITE_API_KEY) {
