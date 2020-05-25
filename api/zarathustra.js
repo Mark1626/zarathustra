@@ -29,20 +29,19 @@ const updateGist = (content, response) => {
       response.status(200).json({
         msg: `Log added`,
       });
-      console.error(res);
     }
   ).catch((err) => {
-    res.status(500).json({
+    response.status(500).json({
       msg: `Unexpected error occured`,
     });
     console.error(err);
   });
 };
 
-module.exports = (req, res) => {
+module.exports = (request, response) => {
   console.log("Started Request")
-  const { auth } = req.headers;
-  const { entry } = req.body;
+  const { auth } = request.headers;
+  const { entry } = request.body;
   let content;
 
   if (auth === WRITE_API_KEY) {
@@ -52,16 +51,16 @@ module.exports = (req, res) => {
         content = val.files["zarathustra.txt"].content;
         console.log("Fetch done succesfully")
         const log = `${content}\n${new Date().toISOString()}\t${entry}`
-        updateGist(log, res);
+        updateGist(log, response);
       })
       .catch((err) => {
-        res.status(500).json({
+        response.status(500).json({
           msg: `Unexpected error occured`,
         });
         console.error(err);
       });
   } else {
-    res.status(401).json({
+    response.status(401).json({
       msg: `Unauthorized`,
     });
   }
