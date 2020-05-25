@@ -1,8 +1,7 @@
 const http = require("http");
 
 module.exports = (req, res) => {
-  const API_URL = `https://api.github.com`;
-  const API_KEY = process.env.API_KEY;
+  const API_URL = `http://api.github.com`;
   const GIST_ID = process.env.GIST_ID;
 
   http
