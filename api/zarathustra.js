@@ -39,12 +39,11 @@ const updateGist = (content, res) => {
 };
 
 module.exports = (req, res) => {
-  console.log(req.headers)
-  const { Auth } = req.headers;
+  const { auth } = req.headers;
   const { entry } = req.body;
   let content;
 
-  if (Auth === WRITE_API_KEY) {
+  if (auth === WRITE_API_KEY) {
     fetch(`${API_URL}/gists/${GIST_ID}`)
       .then((res) => res.json())
       .then((val) => {
