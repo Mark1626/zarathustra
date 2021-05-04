@@ -1,9 +1,10 @@
 const fetch = require("node-fetch");
+const { RequestHandlerWithAuth } = require("../lib/core")
 
-const API_KEY = process.env.API_KEY;
-const WRITE_API_KEY = process.env.WRITE_API_KEY;
+const API_KEY = process.env.API_KEY || "";
+const WRITE_API_KEY = process.env.WRITE_API_KEY || "";
 const API_URL = `https://api.github.com`;
-const GIST_ID = process.env.GIST_ID;
+const GIST_ID = process.env.GIST_ID || "";
 
 const updateGist = async (content) => {
   let resp;
@@ -38,13 +39,14 @@ const updateGist = async (content) => {
   return resp;
 };
 
-module.exports = (request, response) => {
-  console.log("Started Request");
-  const { auth } = request.headers;
-  const { entry } = request.body;
-  let content;
+const Handler = RequestHandlerWithAuth({
+  meta: {
+    name: 'zarathustra'
+  },
+  handle: (request, response) => {
+    const { entry } = request.body;
+    let content;
 
-  if (auth === WRITE_API_KEY) {
     fetch(`${API_URL}/gists/${GIST_ID}`)
       .then((res) => res.json())
       .then(async (val) => {
@@ -56,15 +58,7 @@ module.exports = (request, response) => {
           msg,
         });
       })
-      .catch((err) => {
-        response.status(500).json({
-          msg: `Unexpected error occured`,
-        });
-        console.error(err);
-      });
-  } else {
-    response.status(401).json({
-      msg: `Unauthorized`,
-    });
   }
-};
+})
+
+module.exports = Handler.handle
